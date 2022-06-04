@@ -1,0 +1,41 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.236.0/containers/docker-from-docker
+{
+	"name": "Docker from Docker",
+	"dockerFile": "Dockerfile",
+	"runArgs": ["--init"],
+	"mounts": [ "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind" ],
+	"overrideCommand": false,
+	
+	// Use this environment variable if you need to bind mount your local source code into a new container.
+	"remoteEnv": {
+		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+	},
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {	
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-azuretools.vscode-docker"
+			]
+		}
+	},
+	
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Install tilt.dev and tilt ctlpl.
+	"postCreateCommand": "go install github.com/tilt-dev/ctlptl/cmd/ctlptl@latest && curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh | bash",
+	// Each start, create a cluster if it doesn't exist already. Connect to kubectl. User needs only 
+	"postStartCommand": "minikube config set memory 8192 && ctlptl create cluster minikube --registry=ctlptl-registry --min-cpus=4",
+
+	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "vscode",
+	"features": {
+		"kubectl-helm-minikube": "1.23",
+		"homebrew": "latest",
+		"node": "lts"
+	}
+}
